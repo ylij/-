@@ -1,14 +1,13 @@
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, height=device-height,initial-scale=1.0">
 <style id='style'>
+  .img1{background-image:url('http://img.netbian.com/file/2020/0511/afc6a3f40b8710341f17d2215b934c62.jpg')}
   body{
     margin:0;
 	background-color:black;
-    background-image:url(clockbg.jpg);
 	background-repeat:no-repeat;
-	width:1920px;
-	height:1080px;
-	display:flex;
-	overflow:hidden;
+	background-position:center;
+	background-size:cover;
   }
   ul,li{position:absolute}
   
@@ -16,7 +15,6 @@
     list-style:none;
 	padding:0;
 	margin:0;
-	/*border:2px solid green*/
   }
   
   li{
@@ -29,65 +27,61 @@
   
   .clock{
     position:relative;
-    width:1080px;
-    height:1080px;
+    width:62em;
+    height:62em;
     color:white;
 	text-shadow:0 0 10px white;
-    border-radius:50%;
     margin:auto;
-	
+	overflow:hidden;
+	top:calc(50% - 62em / 2)
   }
   
   #hour{
-    top:11em;
-    bottom:11em;
-    left:11em;
-    right:11em;
-	display:
+    top:10em;
+    bottom:10em;
+    left:10em;
+    right:10em;
   }
   
   #minute{
-    top:6em;
-    bottom:6em;
-    left:6em;
-    right:6em;
-	
+    top:5em;
+    bottom:5em;
+    left:5em;
+    right:5em;
   }
   
   #second{
-    top:1em;
-    bottom:1em;
-    left:1em;
-    right:1em;
-	
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
   }
   
   li>div{
     width:4em;
 	text-align:center;
 	display:inline-block;
-	/*border:1px solid orange*/
   }
   
   #week{
-    top:16em;
-    bottom:16em;
-    left:16em;
-    right:16em;
+    top:15em;
+    bottom:15em;
+    left:15em;
+    right:15em;
   }
   
   #day{
-    top:20em;
-	bottom:20em;
-	left:20em;
-	right:20em;
+    top:19em;
+	bottom:19em;
+	left:19em;
+	right:19em;
   }
   
   #month{
-    top:25em;
-	bottom:25em;
-	left:25em;
-	right:25em;
+    top:24em;
+	bottom:24em;
+	left:24em;
+	right:24em;
   }
   
   #year{
@@ -103,11 +97,12 @@
   }
   
   .clock>ul{
-    transition-timing-function: linear;
+    transition-duration:300ms;
+    transition-timing-function:linear;
   }
 </style>
 <body>
-  <div class="clock">
+  <div class="clock" id="clock">
 	<div id="year" class="focus"></div>
 	<ul id="month"></ul>
 	<ul id="day"></ul>
@@ -118,7 +113,8 @@
   </div>
   <script>
 	/*这代码写得我自己都看不懂  (๑•॒̀ ູ॒•́๑)啦啦啦*/
-	numbers='拾壹貳叁肆伍陸柒捌玖';
+	const traditional=0;//繁体请按1，简体请按0。
+	numbers=traditional?'拾壹貳叁肆伍陸柒捌玖':'十一二三四五六七八九';
 	degs={
 	  monthDeg:30,
 	  dayDeg:0,
@@ -132,11 +128,9 @@
 	days=(months==2?(fyear%4==0?29:28):([1,3,5,7,8,10,12].includes(months)?31:30));
 	degs.dayDeg=(months==2?(days==28?12.8571:12.4137):(days==30?12:11.6129));
 	fyear+='';
-	for(let i=0;i<fyear.length;i++)
-	  year.innerHTML+=numbers[fyear[i]];
-	year.innerHTML=year.innerHTML.replace(/拾/g,'零');
-	year.innerHTML+='年';
-	for(let i=0,li,mDeg=0,msDeg=0,hDeg=0,wDeg=0,dDeg=0,s='',sty=['>li:nth-of-type(','){transform:rotate(','deg)}'],n=1;i<6;i++){
+	for(let i=0;i<fyear.length;i++)year.innerHTML+=numbers[fyear[i]];
+	year.innerHTML=year.innerHTML.replace(traditional?/拾/g:/十/g,'零')+'年';
+	for(let i=0,li,mDeg=0,msDeg=0,hDeg=0,wDeg=0,dDeg=0,s='',sty=['>li:nth-of-type(','){transform:rotate(-','deg)}'],n=1;i<6;i++){
 	  for(let j=0;j<10;j++){
 		s=numbers[j];
 		if(i>0&&j>0)s=numbers[0]+s;
@@ -166,7 +160,7 @@
 		  document.styleSheets[0].insertRule('#hour'+sty[0]+n+sty[1]+hDeg+sty[2],0);
 		  hDeg+=degs.hourDeg;
 		  li=document.createElement('li');
-		  li.innerHTML='<div>'+s+'時</div>';
+		  li.innerHTML='<div>'+s+(traditional?'時':'时')+'</div>';
 		  hour.appendChild(li);
 		}
 		document.styleSheets[0].insertRule('.sdeg'+sty[0]+n+sty[1]+msDeg+sty[2],0);
@@ -180,131 +174,128 @@
 		second.appendChild(li);
 	  }
 	}
-	hour.firstChild.firstChild.innerHTML='零時';
+	hour.firstChild.firstChild.innerHTML='零'+(traditional?'時':'时');
 	minute.firstChild.firstChild.innerHTML='零分';
 	second.firstChild.firstChild.innerHTML='零秒';
 	day.removeChild(day.firstChild);
 	month.removeChild(month.firstChild);
-	ss=document.styleSheets[0];
-	rules=ss.cssRules?ss.cssRules:ss.rules;
-	for(let i=0,rule,selector;i<rules.length;i++){
-	  rule=rules[i];
-	  selector=rule.selectorText;
-	  if(['#month','#day','#week','#hour','#minute','#second'].includes(selector))rule.style.transitionDuration='.2s';
-	  if(selector=='#second'){
-	    sAngle=rule.style;
-	  }else if(selector=='#minute'){
-	    mAngle=rule.style;
-	  }else if(selector=='#hour'){
-	    hAngle=rule.style;
-	  }else if(selector=='#week'){
-	    wAngle=rule.style;
-	  }else if(selector=='#day'){
-	    dAngle=rule.style;
-	  }else if(selector=='#month'){
-	    MAngle=rule.style;
-	  }
-	}
-	
-	date=new Date();
-	months=date.getMonth();
-    MAngle.transform='rotate(-'+degs.monthDeg*months+'deg)';
+	degsty=['rotate(','deg)'];
+	months=new Date().getMonth();
+	month.style.transform=degsty[0]+degs.monthDeg*months+degsty[1];
 	month.children[months].className='focus';
-	days=date.getDate()-1;
-	dAngle.transform='rotate(-'+degs.dayDeg*days+'deg)';
-	day.children[days].className='focus';
-	weeks=date.getDay();
-	wAngle.transform='rotate(-'+degs.weekDeg*weeks+'deg)';
-	week.children[weeks].className='focus';
-	hours=date.getHours();
-	hAngle.transform='rotate(-'+degs.hourDeg*hours+'deg)';
-	hour.children[hours].className='focus';
-	minutes=date.getMinutes();
-	mAngle.transform='rotate(-'+degs.msDeg*minutes+'deg)';
-	minute.children[minutes].className='focus';
-	seconds=date.getSeconds();
-	sAngle.transform='rotate(-'+degs.msDeg*seconds+'deg)';
-	second.children[seconds].className='focus';
-	
-	timing=()=>{
+	for(let i=0,n=months,o=1;i<12;i++,o-=0.0833,n++){
+	  if(n==12)n=0;
+	  month.children[n].style.opacity=o
+	}
+	var weeks,hours,minutes;
+	setInterval(()=>{
 	  date=new Date();
+	  if(date.getMonth()!=months||date.getFullYear()!=fyear)location.href=location.href;
+	  
+	  tmp=date.getDate()-1;
+	  if(tmp!=days){
+	    days=tmp;
+		tmp=day.children.length;
+		if(!days){
+		  days=tmp;
+		  setTimeout(()=>{
+		    day.style.transitionProperty='none';
+			day.style.transform='';
+		  },600);
+		}
+		if(days==1)day.style.transitionProperty='';
+	    day.style.transform=degsty[0]+degs.dayDeg*days+degsty[1];
+		if(days==tmp)days=0;
+		for(let i=0,n=days,o=1;i<tmp;i++,o-=1/tmp,n++){
+		  if(n==tmp)n=0;
+		  day.children[n].style.opacity=o
+		}
+		try{document.querySelector('#day>.focus').removeAttribute('class')}catch(e){}
+	    day.children[days].className='focus';
+	  }
+	  
+	  tmp=date.getDay();
+	  if(tmp!=weeks){
+	    weeks=tmp;
+		if(!weeks){
+		  weeks=7;
+		  setTimeout(()=>{
+		    week.style.transitionProperty='none';
+		    week.style.transform='';
+		  },600);
+		}
+		if(weeks==1)week.style.transitionProperty='';
+	    week.style.transform=degsty[0]+degs.weekDeg*weeks+degsty[1];
+		if(weeks==7)weeks=0;
+		for(let i=0,n=weeks,o=1;i<7;i++,o-=0.1428,n++){
+		  if(n==7)n=0;
+		  week.children[n].style.opacity=o
+		}
+		try{document.querySelector('#week>.focus').removeAttribute('class')}catch(e){}
+	    week.children[weeks].className='focus';
+	  }
+	  
+	  tmp=date.getHours();
+	  if(tmp!=hours){
+	    hours=tmp;
+		if(!hours){
+		  hours=24;
+	      setTimeout(()=>{
+		    hour.style.transitionProperty='none';
+		    hour.style.transform='';
+		  },600);
+		}
+		if(hours==1)hour.style.transitionProperty='';
+	    hour.style.transform=degsty[0]+degs.hourDeg*hours+degsty[1];
+		if(hours==24)hours=0;
+		for(let i=0,n=hours,o=1;i<24;i++,o-=0.0416,n++){
+		  if(n==24)n=0;
+		  hour.children[n].style.opacity=o
+		}
+		try{document.querySelector('#hour>.focus').removeAttribute('class')}catch(e){}
+	    hour.children[hours].className='focus';
+	  }
+	  
+	  tmp=date.getMinutes();
+	  if(tmp!=minutes){
+	    minutes=tmp;
+	    if(!minutes){
+	      minutes=60;
+		  setTimeout(()=>{
+		    minute.style.transitionProperty='none';
+			minute.style.transform='';
+		  },600);
+	    }
+		if(minutes==1)minute.style.transitionProperty='';
+	    minute.style.transform=degsty[0]+degs.msDeg*minutes+degsty[1];
+		if(minutes==60)minutes=0;
+		for(let i=0,n=minutes,o=1;i<60;i++,o-=0.0166,n++){
+		  if(n==60)n=0;
+		  minute.children[n].style.opacity=o;
+	    }
+		try{document.querySelector('#minute>.focus').removeAttribute('class')}catch(e){}
+	    minute.children[minutes].className='focus';
+	  }
+	  
 	  seconds=date.getSeconds();
 	  if(!seconds){
 	    seconds=60;
 		setTimeout(()=>{
-		  sAngle.transitionProperty='none';
-		  sAngle.transform='';
-		  setTimeout("sAngle.transitionProperty=''",200);
-	    },400);
+		  second.style.transitionProperty='none';
+		  second.style.transform='';
+	    },600);
 	  }
-	  sAngle.transform='rotate(-'+degs.msDeg*seconds+'deg)';
-	  document.querySelector('#second>.focus').removeAttribute('class');
-	  if(seconds==60){
-	    seconds=0;
-		minutes=date.getMinutes();
-	    if(!minutes){
-	      minutes=60;
-		  setTimeout(()=>{
-		    mAngle.transitionProperty='none';
-		    mAngle.transform='';
-		    setTimeout("mAngle.transitionProperty=''",200);
-		  },400);
-	    }
-	    mAngle.transform='rotate(-'+degs.msDeg*minutes+'deg)';
-		document.querySelector('#minute>.focus').removeAttribute('class');
-		if(minutes==60){
-		  minutes=0;
-		  hours=date.getHours();
-		  if(!hours){
-		    hours=24;
-			setTimeout(()=>{
-			  hAngle.transitionProperty='none';
-			  hAngle.transform='';
-			  setTimeout("hAngle.transitionProperty=''",200);
-			},400);
-		  }
-		  hAngle.transform='rotate(-'+degs.hourDeg*hours+'deg)';
-		  document.querySelector('#hour>.focus').removeAttribute('class');
-		  if(hours==24){
-		    hours=0;
-			weeks=date.getDay();
-			if(!weeks){
-			  weeks=7;
-			  setTimeout(()=>{
-			    wAngle.transitionProperty='none';
-				wAngle.transform='';
-				setTimeout("wAngle.transitionProperty=''",200);
-			  },400);
-			}
-			wAngle.transform='rotate(-'+degs.weekDeg*weeks+'deg)';
-			document.querySelector('#week>.focus').removeAttribute('class');
-			if(weeks==7){
-			  weeks=0;
-			  days=date.getDate()-1;
-			  if(!days){
-			    days=day.children.length;
-				setTimeout(()=>{
-				  dAngle.transitionProperty='none';
-				  dAngle.transform='';
-				  setTimeout("dAngle.transitionProperty=''",200);
-				},400);
-			  }
-			  dAngle.transform='rotate(-'+degs.dayDeg*days+'deg)';
-			  document.querySelector('#day>.focus').removeAttribute('class');
-			  if(days==day.children.length){
-			    days=0;
-				if(date.getMonth()!=months||date.getFullYear()!=fyear)location.href=location.href;
-			  }
-			  day.children[days].className='focus';
-			}
-			week.children[weeks].className='focus';
-		  }
-		  hour.children[hours].className='focus';
-		}
-		minute.children[minutes].className='focus';
+	  if(seconds==1)second.style.transitionProperty='';
+	  second.style.transform=degsty[0]+degs.msDeg*seconds+degsty[1];
+	  if(seconds==60)seconds=0;
+	  for(let i=0,n=seconds,o=1;i<60;i++,o-=0.0166,n++){
+		if(n==60)n=0;
+		second.children[n].style.opacity=o;
 	  }
+	  try{document.querySelector('#second>.focus').removeAttribute('class')}catch(e){}
 	  second.children[seconds].className='focus';
-	}
-	setInterval(timing,1000);
+	  
+	},1000);
+	
   </script>
 </body>
